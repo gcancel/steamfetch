@@ -24,7 +24,8 @@ func main() {
 
 	err = godotenv.Load(".env")
 	if err != nil {
-		fmt.Errorf("error loading .env file")
+		fmt.Printf("error loading .env file\n")
+		os.Exit(1)
 	}
 
 	applicationState := &state{
