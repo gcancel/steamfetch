@@ -1,4 +1,4 @@
-module github.com/gcancel/blfetch
+module github.com/gcancel/steamfetch
 
 go 1.24.4
 
