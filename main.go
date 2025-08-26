@@ -64,12 +64,18 @@ func handleInitialStart() {
 	var input string
 	fmt.Printf("Enter steam id: ")
 	// handle input...
-	fmt.Scan(&input)
+	_, err := fmt.Scan(&input)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(input)
 
 	fmt.Printf("Enter steam web api key: ")
 	// handle input...
-	fmt.Scan(&input)
+	_, err = fmt.Scan(&input)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(input)
 	os.Exit(0)
 }
