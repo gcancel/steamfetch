@@ -5,6 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/gcancel/steamfetch/internal/database"
+	_ "github.com/mattn/go-sqlite3"
+
 	"github.com/joho/godotenv"
 )
 
@@ -12,6 +15,7 @@ type state struct {
 	// db connection will go here
 	steamID     string
 	steamAPIKey string
+	dbQueries   database.Queries
 }
 
 func main() {
@@ -22,9 +26,16 @@ func main() {
 		os.Exit(1)
 	}
 
+	db, err := initDatabase()
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
 	applicationState := &state{
 		steamID:     os.Getenv("STEAM_ID"),
 		steamAPIKey: os.Getenv("STEAM_WEBAPI_KEY"),
+		dbQueries:   *database.New(db),
 	}
 
 	commands := commands{
