@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -18,7 +17,7 @@ func writeEnv(key, value string) error {
 	}
 	if os.Getenv(key) == "" {
 		entry := fmt.Sprintf("%v=\"%v\"\n", key, value)
-		file, err := os.OpenFile("./.env", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		file, err := os.OpenFile("./.env", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0600)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -45,7 +44,10 @@ func handleInitialStart() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	writeEnv("STEAM_ID", input)
+	err = writeEnv("STEAM_ID", input)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	fmt.Printf("Enter steam web api key: ")
 	// handle input...
@@ -53,7 +55,10 @@ func handleInitialStart() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	writeEnv("STEAM_WEBAPI_KEY", input)
+	err = writeEnv("STEAM_WEBAPI_KEY", input)
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println("settings updated. please restart steamfetch to use...")
 	os.Exit(0)
 }
@@ -88,7 +93,7 @@ func initDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
-func fileExists(filename string) bool {
+/* func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !errors.Is(err, os.ErrNotExist)
-}
+} */
