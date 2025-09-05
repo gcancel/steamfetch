@@ -23,7 +23,7 @@ func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
 		fmt.Printf("error loading .env file\n")
-		os.Exit(1)
+		handleInitialStart()
 	}
 
 	db, err := initDatabase()
@@ -65,28 +65,4 @@ func main() {
 		log.Fatal(err)
 	}
 
-}
-
-func handleInitialStart() {
-	// function will take input and update the environment variables.
-	fmt.Println("Initial Start:")
-	fmt.Println("steamfetch requires your steam_id and an active steam web api key to function.")
-
-	var input string
-	fmt.Printf("Enter steam id: ")
-	// handle input...
-	_, err := fmt.Scan(&input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(input)
-
-	fmt.Printf("Enter steam web api key: ")
-	// handle input...
-	_, err = fmt.Scan(&input)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println(input)
-	os.Exit(0)
 }

@@ -9,13 +9,15 @@ import (
 	"context"
 )
 
-const getCountGames = `-- name: GetCountGames :exec
+const getCountGames = `-- name: GetCountGames :one
 SELECT COUNT(*) FROM steam_games
 `
 
-func (q *Queries) GetCountGames(ctx context.Context) error {
-	_, err := q.db.ExecContext(ctx, getCountGames)
-	return err
+func (q *Queries) GetCountGames(ctx context.Context) (int64, error) {
+	row := q.db.QueryRowContext(ctx, getCountGames)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
 }
 
 const insertGame = `-- name: InsertGame :one

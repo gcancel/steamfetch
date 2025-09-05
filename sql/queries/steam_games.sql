@@ -1,4 +1,4 @@
--- name: GetCountGames :exec
+-- name: GetCountGames :one
 SELECT COUNT(*) FROM steam_games;
 
 -- name: InsertGame :one

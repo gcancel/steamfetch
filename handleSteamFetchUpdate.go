@@ -14,7 +14,6 @@ import (
 
 func handleSteamFetchUpdate(s *state, cmd command) error {
 	steamClient := &http.Client{Timeout: 30 * time.Second}
-	fmt.Println(s.steamAPIKey, s.steamID)
 	url := fmt.Sprintf("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=%v&steamid=%v&include_appinfo=1", s.steamAPIKey, s.steamID)
 
 	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
@@ -39,29 +38,37 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	}
 
 	// take this data and put it in the db for use instead of constantly calling api
-	steamGames := result.Response.Games
-	for _, game := range steamGames {
-		_, err := s.dbQueries.InsertGame(
-			context.Background(),
-			database.InsertGameParams{
-				Appid:                  game.Appid,
-				Name:                   game.Name,
-				PlaytimeForever:        game.PlaytimeForever,
-				ImgIconUrl:             game.ImgIconURL,
-				PlaytimeWindowsForever: game.PlaytimeWindowsForever,
-				PlaytimeMacForever:     game.PlaytimeMacForever,
-				PlaytimeLinuxForever:   game.PlaytimeLinuxForever,
-				PlaytimeDeckForever:    game.PlaytimeDeckForever,
-				RtimeLastPlayed:        game.RtimeLastPlayed,
-				PlaytimeDisconnected:   game.PlaytimeDisconnected,
-				Playtime2weeks:         game.Playtime2Weeks,
-			},
-		)
-		if err != nil {
-			log.Fatal("error populating database", err)
+	gameCount, err := s.dbQueries.GetCountGames(context.Background())
+	if err != nil {
+		log.Fatal("error counting games in database", err)
+	}
+	if gameCount <= 1 {
+		steamGames := result.Response.Games
+		for _, game := range steamGames {
+			_, err := s.dbQueries.InsertGame(
+				context.Background(),
+				database.InsertGameParams{
+					Appid:                  game.Appid,
+					Name:                   game.Name,
+					PlaytimeForever:        game.PlaytimeForever,
+					ImgIconUrl:             game.ImgIconURL,
+					PlaytimeWindowsForever: game.PlaytimeWindowsForever,
+					PlaytimeMacForever:     game.PlaytimeMacForever,
+					PlaytimeLinuxForever:   game.PlaytimeLinuxForever,
+					PlaytimeDeckForever:    game.PlaytimeDeckForever,
+					RtimeLastPlayed:        game.RtimeLastPlayed,
+					PlaytimeDisconnected:   game.PlaytimeDisconnected,
+					Playtime2weeks:         game.Playtime2Weeks,
+				},
+			)
+			if err != nil {
+				log.Fatal("error populating database", err)
+			}
+			// add results print out here.
+			fmt.Printf("adding game: %v | appid: %v\n", game.Name, game.Appid)
 		}
 	}
 
-	fmt.Printf("results: %#v", result)
+	//fmt.Printf("results: %#v", result)
 	return nil
 }
