@@ -1,3 +1,4 @@
 .env
 steamfetch
 api_tests.http
+steam_games.db
