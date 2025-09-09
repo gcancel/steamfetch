@@ -13,6 +13,15 @@ import (
 )
 
 func handleSteamFetchUpdate(s *state, cmd command) error {
+	forceUpdate := false
+	if cmd.arguments[0] == "-f" || cmd.arguments[0] == "-force" {
+		forceUpdate = true
+		err := s.dbQueries.ClearSteamDB(context.Background())
+		if err != nil {
+			log.Fatal("error clearing database", err)
+		}
+	}
+
 	steamClient := &http.Client{Timeout: 30 * time.Second}
 	url := fmt.Sprintf("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=%v&steamid=%v&include_appinfo=1", s.steamAPIKey, s.steamID)
 
@@ -42,7 +51,7 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal("error counting games in database", err)
 	}
-	if gameCount <= 1 {
+	if gameCount <= 1 || forceUpdate {
 		steamGames := result.Response.Games
 		for _, game := range steamGames {
 			_, err := s.dbQueries.InsertGame(

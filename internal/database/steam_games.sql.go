@@ -7,7 +7,17 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
+
+const clearSteamDB = `-- name: ClearSteamDB :exec
+DELETE FROM steam_games
+`
+
+func (q *Queries) ClearSteamDB(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, clearSteamDB)
+	return err
+}
 
 const getCountGames = `-- name: GetCountGames :one
 SELECT COUNT(*) FROM steam_games
@@ -18,6 +28,62 @@ func (q *Queries) GetCountGames(ctx context.Context) (int64, error) {
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const getTopPlayedGames = `-- name: GetTopPlayedGames :many
+SELECT appid, name, playtime_forever FROM steam_games
+ORDER BY playtime_forever DESC LIMIT ?
+`
+
+type GetTopPlayedGamesRow struct {
+	Appid           int
+	Name            string
+	PlaytimeForever int
+}
+
+func (q *Queries) GetTopPlayedGames(ctx context.Context, limit int64) ([]GetTopPlayedGamesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTopPlayedGames, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTopPlayedGamesRow
+	for rows.Next() {
+		var i GetTopPlayedGamesRow
+		if err := rows.Scan(&i.Appid, &i.Name, &i.PlaytimeForever); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTotalGameTime2Weeks = `-- name: GetTotalGameTime2Weeks :one
+SELECT SUM(playtime_2weeks) FROM steam_games
+`
+
+func (q *Queries) GetTotalGameTime2Weeks(ctx context.Context) (sql.NullFloat64, error) {
+	row := q.db.QueryRowContext(ctx, getTotalGameTime2Weeks)
+	var sum sql.NullFloat64
+	err := row.Scan(&sum)
+	return sum, err
+}
+
+const getTotalGameTimeForever = `-- name: GetTotalGameTimeForever :one
+SELECT SUM(playtime_forever) FROM steam_games
+`
+
+func (q *Queries) GetTotalGameTimeForever(ctx context.Context) (sql.NullFloat64, error) {
+	row := q.db.QueryRowContext(ctx, getTotalGameTimeForever)
+	var sum sql.NullFloat64
+	err := row.Scan(&sum)
+	return sum, err
 }
 
 const insertGame = `-- name: InsertGame :one
@@ -38,17 +104,17 @@ VALUES(
 `
 
 type InsertGameParams struct {
-	Appid                  int64
+	Appid                  int
 	Name                   string
-	PlaytimeForever        int64
+	PlaytimeForever        int
 	ImgIconUrl             string
-	PlaytimeWindowsForever int64
-	PlaytimeMacForever     int64
-	PlaytimeLinuxForever   int64
-	PlaytimeDeckForever    int64
-	RtimeLastPlayed        int64
-	PlaytimeDisconnected   int64
-	Playtime2weeks         int64
+	PlaytimeWindowsForever int
+	PlaytimeMacForever     int
+	PlaytimeLinuxForever   int
+	PlaytimeDeckForever    int
+	RtimeLastPlayed        int
+	PlaytimeDisconnected   int
+	Playtime2weeks         int
 }
 
 func (q *Queries) InsertGame(ctx context.Context, arg InsertGameParams) (SteamGame, error) {

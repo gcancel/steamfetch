@@ -16,3 +16,16 @@ VALUES(
     ?,
     ?
 )RETURNING *;
+
+-- name: GetTotalGameTimeForever :one
+SELECT SUM(playtime_forever) FROM steam_games;
+
+-- name: GetTotalGameTime2Weeks :one
+SELECT SUM(playtime_2weeks) FROM steam_games;
+
+-- name: GetTopPlayedGames :many
+SELECT appid, name, playtime_forever FROM steam_games
+ORDER BY playtime_forever DESC LIMIT ?;
+
+-- name: ClearSteamDB :exec
+DELETE FROM steam_games;

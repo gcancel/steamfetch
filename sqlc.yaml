@@ -1,4 +1,17 @@
 version: "2"
+overrides:
+  go:
+    overrides:
+      - db_type: "INTEGER"
+        go_type:
+          type: "int"
+      - db_type: "INTEGER"
+        nullable: true
+        go_type:
+          type: "int"
+      - column: "steam_games.playtime_forever"
+        go_type: "int"
+          
 sql:
   - schema: "sql/schema"
     queries: "sql/queries"
@@ -6,3 +19,4 @@ sql:
     gen:
       go:
         out: "internal/database"
+        

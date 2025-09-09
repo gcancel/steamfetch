@@ -5,15 +5,15 @@
 package database
 
 type SteamGame struct {
-	Appid                  int64
+	Appid                  int
 	Name                   string
-	PlaytimeForever        int64
+	PlaytimeForever        int
 	ImgIconUrl             string
-	PlaytimeWindowsForever int64
-	PlaytimeMacForever     int64
-	PlaytimeLinuxForever   int64
-	PlaytimeDeckForever    int64
-	RtimeLastPlayed        int64
-	PlaytimeDisconnected   int64
-	Playtime2weeks         int64
+	PlaytimeWindowsForever int
+	PlaytimeMacForever     int
+	PlaytimeLinuxForever   int
+	PlaytimeDeckForever    int
+	RtimeLastPlayed        int
+	PlaytimeDisconnected   int
+	Playtime2weeks         int
 }
