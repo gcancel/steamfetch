@@ -14,11 +14,13 @@ import (
 
 func handleSteamFetchUpdate(s *state, cmd command) error {
 	forceUpdate := false
-	if cmd.arguments[0] == "-f" || cmd.arguments[0] == "-force" {
-		forceUpdate = true
-		err := s.dbQueries.ClearSteamDB(context.Background())
-		if err != nil {
-			log.Fatal("error clearing database", err)
+	if len(cmd.arguments) >= 1 {
+		if cmd.arguments[0] == "-f" || cmd.arguments[0] == "-force" {
+			forceUpdate = true
+			err := s.dbQueries.ClearSteamDB(context.Background())
+			if err != nil {
+				log.Fatal("error clearing database", err)
+			}
 		}
 	}
 
