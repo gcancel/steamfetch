@@ -1,6 +1,6 @@
 [![ci](https://github.com/gcancel/steamfetch/actions/workflows/ci.yml/badge.svg)](https://github.com/gcancel/steamfetch/actions/workflows/ci.yml)
 # steamfetch
-CLI utility to fetch and display your steam information.
+An easy to use CLI utility to fetch and display your steam information.
 ![output](https://github.com/gcancel/steamfetch/img/output.png)
 ## How to Run:
 1. Install ![Go](https://go.dev/doc/install)
