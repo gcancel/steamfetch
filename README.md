@@ -6,7 +6,7 @@
 ## How to Run:
 1. Install ![Go](https://go.dev/doc/install)
 2. Clone repository.
-3. Run `go mod tidy` from the cloned repository's directory
+3. Run `go mod tidy` from the cloned repository's directory.
 4. Build the executable and run by executing:
     - Linux:  
     ```bash
