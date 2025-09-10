@@ -17,7 +17,7 @@
     ```powershell
         go build -o <directory_path>/steamfetch && steamfetch udpate
     ```
-5. You will be prompted to enter your steamid and your ![Steam Web API Key](steamcommunity.com/dev/apikey).
+5. You will be prompted to enter your steamid and your ![Steam Web API Key](http://steamcommunity.com/dev/apikey).
    - you can find your steamid under: `Settings -> Account Details` in steam.
 6. An initial update should run to pull down your steam game data and you are ready to go!
 
