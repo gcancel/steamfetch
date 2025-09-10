@@ -4,6 +4,15 @@
 
 package database
 
+import (
+	"database/sql"
+)
+
+type Meta struct {
+	SteamID    string
+	LastUpdate sql.NullString
+}
+
 type SteamGame struct {
 	Appid                  int
 	Name                   string

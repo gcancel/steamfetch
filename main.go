@@ -43,6 +43,7 @@ func main() {
 	}
 
 	// registered commands:
+	commands.register("steamfetch", handleSteamFetch)
 	commands.register("-mostplayed", handleSteamFetch) // default command if no arguments are passed
 	commands.register("update", handleSteamFetchUpdate)
 

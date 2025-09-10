@@ -81,7 +81,11 @@ func initDatabase() (*sql.DB, error) {
 		rtime_last_played INTEGER NOT NULL,
 		playtime_disconnected INTEGER NOT NULL,
 		playtime_2weeks INTEGER NOT NULL
-    )`
+    );
+		CREATE TABLE IF NOT EXISTS meta(
+		steam_id TEXT PRIMARY KEY,
+		last_update TEXT DEFAULT (datetime(current_timestamp, 'localtime'))
+	)`
 
 	_, err = db.ExecContext(
 		context.Background(),
@@ -113,4 +117,13 @@ const (
 
 func setANSIText(s, code string) string {
 	return code + s + Reset
+}
+
+func minutesToHours(min int) (hr, r int) {
+	hrs := min / 60
+	if min%60 != 0 {
+		remainingMins := min % 60
+		return hrs, remainingMins
+	}
+	return hrs, 0
 }

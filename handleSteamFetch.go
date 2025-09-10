@@ -81,7 +81,8 @@ func handleSteamFetch(s *state, cmd command) error {
 		log.Fatal(err)
 	}
 	for _, game := range mostPlayedGames {
-		fmt.Printf("%s%v: %v mins\n", arrow, game.Name, game.PlaytimeForever)
+		hrs, min := minutesToHours(game.PlaytimeForever)
+		fmt.Printf("%s%v: %vhrs, %vmins\n", arrow, game.Name, hrs, min)
 	}
 	fmt.Println(setANSIText("----------------------------------", Blue))
 
