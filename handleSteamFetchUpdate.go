@@ -71,7 +71,10 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 			}))
 
 		for _, game := range steamGames {
-			bar.Add(1)
+			err = bar.Add(1)
+			if err != nil {
+				log.Fatal(err)
+			}
 			_, err := s.dbQueries.InsertGame(
 				context.Background(),
 				database.InsertGameParams{
