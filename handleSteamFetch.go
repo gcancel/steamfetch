@@ -94,6 +94,6 @@ func handleSteamFetch(s *state, cmd command) error {
 		fmt.Printf("%s%v: %vhrs, %vmins\n", arrow, game.Name, hrs, min)
 	}
 	fmt.Println(setANSIText("----------------------------------", Blue))
-	fmt.Println("%v: %v", setANSIText("Last updated", Cyan), lastDBUpdate.String)
+	fmt.Printf("%v: %v", setANSIText("Last updated", Cyan), lastDBUpdate.String)
 	return nil
 }
