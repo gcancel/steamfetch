@@ -104,6 +104,6 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal("error setting update timestamp ", err)
 	}
-	fmt.Printf("\nLast updated: %v", dbmeta.LastUpdate.String)
+	fmt.Printf("\nLast updated: %v", dbmeta.String)
 	return nil
 }

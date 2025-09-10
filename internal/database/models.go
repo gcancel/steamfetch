@@ -9,8 +9,7 @@ import (
 )
 
 type Meta struct {
-	SteamID    string
-	LastUpdate sql.NullString
+	LastUpdated sql.NullString
 }
 
 type SteamGame struct {

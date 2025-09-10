@@ -1,7 +1,10 @@
 -- +goose Up
 CREATE TABLE meta(
-    steam_id TEXT PRIMARY KEY,
-    last_update TEXT DEFAULT (datetime(current_timestamp, 'localtime'))
+    last_updated TEXT DEFAULT (datetime(current_timestamp, 'localtime'))
+);
+INSERT INTO meta(last_updated)
+VALUES(
+    (datetime(current_timestamp, 'localtime'))
 );
 -- +goose Down
 DROP TABLE meta;

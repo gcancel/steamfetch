@@ -7,17 +7,18 @@ package database
 
 import (
 	"context"
+	"database/sql"
 )
 
 const setDatabaseUpdateTime = `-- name: SetDatabaseUpdateTime :one
 UPDATE meta
-SET last_update = (datetime(current_timestamp, 'localtime'))
-RETURNING steam_id, last_update
+SET last_updated = (datetime(current_timestamp, 'localtime'))
+RETURNING last_updated
 `
 
-func (q *Queries) SetDatabaseUpdateTime(ctx context.Context) (Meta, error) {
+func (q *Queries) SetDatabaseUpdateTime(ctx context.Context) (sql.NullString, error) {
 	row := q.db.QueryRowContext(ctx, setDatabaseUpdateTime)
-	var i Meta
-	err := row.Scan(&i.SteamID, &i.LastUpdate)
-	return i, err
+	var last_updated sql.NullString
+	err := row.Scan(&last_updated)
+	return last_updated, err
 }

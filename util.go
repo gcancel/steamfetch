@@ -83,8 +83,11 @@ func initDatabase() (*sql.DB, error) {
 		playtime_2weeks INTEGER NOT NULL
     );
 		CREATE TABLE IF NOT EXISTS meta(
-		steam_id TEXT PRIMARY KEY,
-		last_update TEXT DEFAULT (datetime(current_timestamp, 'localtime'))
+		last_updated TEXT DEFAULT (datetime(current_timestamp, 'localtime'))
+	);
+		INSERT INTO meta(last_updated)
+		VALUES(
+			(datetime(current_timestamp, 'localtime'))
 	)`
 
 	_, err = db.ExecContext(
