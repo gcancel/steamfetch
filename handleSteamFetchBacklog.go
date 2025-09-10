@@ -7,7 +7,7 @@ import (
 )
 
 func handleSteamFetchBacklog(s *state, cmd command) error {
-	// display games in your backlog (never played)
+	// returns comma delimited list of games you have never touched
 	backlog, err := s.dbQueries.GetTotalGamesNotPlayed(context.Background())
 	if err != nil {
 		log.Fatal(err)
