@@ -10,6 +10,17 @@ import (
 	"database/sql"
 )
 
+const getLastDBUpdate = `-- name: GetLastDBUpdate :one
+SELECT last_updated FROM meta
+`
+
+func (q *Queries) GetLastDBUpdate(ctx context.Context) (sql.NullString, error) {
+	row := q.db.QueryRowContext(ctx, getLastDBUpdate)
+	var last_updated sql.NullString
+	err := row.Scan(&last_updated)
+	return last_updated, err
+}
+
 const setDatabaseUpdateTime = `-- name: SetDatabaseUpdateTime :one
 UPDATE meta
 SET last_updated = (datetime(current_timestamp, 'localtime'))
