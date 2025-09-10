@@ -2,7 +2,7 @@
 # steamfetch
 **An easy to use CLI utility to fetch and display your steam information.**
 
-![](https://github.com/gcancel/steamfetch/blob/main/img/output.png)
+![](https://github.com/gcancel/steamfetch/blob/main/img/steam_output.png)
 ## How to Run:
 1. Install [Go](https://go.dev/dl/)
 2. Clone repository.
