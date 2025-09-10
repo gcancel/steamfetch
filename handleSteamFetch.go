@@ -27,6 +27,10 @@ func handleSteamFetch(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+	totalGamesNotPlayed, err := s.dbQueries.GetTotalGamesNotPlayed(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
 	totalGameTimeForever, err := s.dbQueries.GetTotalGameTimeForever(context.Background())
 	if err != nil {
 		log.Fatal(err)
@@ -57,9 +61,10 @@ func handleSteamFetch(s *state, cmd command) error {
 `
 	fmt.Println(setANSIText(logo, Blue))
 	fmt.Printf("%v %v\n", setANSIText("Your steam id:", Yellow), s.steamID)
-	fmt.Printf("%v %v\n", setANSIText("Total number of games:", Yellow), gameCount)
+	fmt.Printf("%v %v\n", setANSIText("🎮 Total number of games:", Yellow), gameCount)
+	fmt.Printf("%v %v\n", setANSIText("😵‍💫 Total games backlog(not played):", Yellow), len(totalGamesNotPlayed))
 	fmt.Printf("%v\n%s%v minutes\n%s %v hours\n%s %v days\n%s %v month/s\n%s %v...\n",
-		setANSIText("Total steam gameplay time:", Yellow),
+		setANSIText("⌛ Total steam gameplay time:", Yellow),
 		arrow,
 		totalGameTimeForeverMins,
 		arrow,

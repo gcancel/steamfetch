@@ -46,6 +46,7 @@ func main() {
 	commands.register("steamfetch", handleSteamFetch)
 	commands.register("-mostplayed", handleSteamFetch) // default command if no arguments are passed
 	commands.register("update", handleSteamFetchUpdate)
+	commands.register("backlog", handleSteamFetchBacklog)
 
 	var commandName string
 	var commandArgs []string

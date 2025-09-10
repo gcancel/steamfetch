@@ -29,3 +29,8 @@ ORDER BY playtime_forever DESC LIMIT ?;
 
 -- name: ClearSteamDB :exec
 DELETE FROM steam_games;
+
+-- name: GetTotalGamesNotPlayed :many
+SELECT name, appid from steam_games
+WHERE playtime_forever = 0
+ORDER BY name;

@@ -86,6 +86,40 @@ func (q *Queries) GetTotalGameTimeForever(ctx context.Context) (sql.NullFloat64,
 	return sum, err
 }
 
+const getTotalGamesNotPlayed = `-- name: GetTotalGamesNotPlayed :many
+SELECT name, appid from steam_games
+WHERE playtime_forever = 0
+ORDER BY name
+`
+
+type GetTotalGamesNotPlayedRow struct {
+	Name  string
+	Appid int
+}
+
+func (q *Queries) GetTotalGamesNotPlayed(ctx context.Context) ([]GetTotalGamesNotPlayedRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTotalGamesNotPlayed)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTotalGamesNotPlayedRow
+	for rows.Next() {
+		var i GetTotalGamesNotPlayedRow
+		if err := rows.Scan(&i.Name, &i.Appid); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const insertGame = `-- name: InsertGame :one
 INSERT INTO steam_games(appid, name, playtime_forever, img_icon_url, playtime_windows_forever, playtime_mac_forever, playtime_linux_forever, playtime_deck_forever, rtime_last_played, playtime_disconnected, playtime_2weeks)
 VALUES(
