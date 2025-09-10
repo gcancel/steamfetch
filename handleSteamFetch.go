@@ -4,10 +4,25 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 )
 
 func handleSteamFetch(s *state, cmd command) error {
 	// will fetch data from the db to aggregate data and display in terminal
+	mostPlayedLimit := 5
+	if len(cmd.arguments) >= 1 {
+		limit, err := strconv.Atoi(cmd.arguments[0])
+		if err != nil {
+			log.Fatal("error parsing mostplayed limit", err)
+		}
+		if limit <= 0 || limit > 50 {
+			fmt.Println("limit must be set between 0 and 50. using default (5)")
+		} else {
+			mostPlayedLimit = limit
+		}
+
+	}
+
 	gameCount, err := s.dbQueries.GetCountGames(context.Background())
 	if err != nil {
 		log.Fatal(err)
@@ -60,8 +75,8 @@ func handleSteamFetch(s *state, cmd command) error {
 	fmt.Printf("%v %v minutes\n", setANSIText("Total steam gameplay time (2 week):", Yellow), int(totalGameTime2Weeks.Float64))
 	fmt.Println(setANSIText("Most played games:", Yellow))
 	fmt.Println(setANSIText("----------------------------------", Blue))
-	limit := 5
-	mostPlayedGames, err := s.dbQueries.GetTopPlayedGames(context.Background(), int64(limit))
+
+	mostPlayedGames, err := s.dbQueries.GetTopPlayedGames(context.Background(), int64(mostPlayedLimit))
 	if err != nil {
 		log.Fatal(err)
 	}

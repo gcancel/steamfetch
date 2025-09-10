@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/gcancel/steamfetch/internal/database"
+	"github.com/schollz/progressbar/v3"
 )
 
 func handleSteamFetchUpdate(s *state, cmd command) error {
@@ -55,7 +56,22 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	}
 	if gameCount <= 1 || forceUpdate {
 		steamGames := result.Response.Games
+
+		bar := progressbar.NewOptions(len(steamGames),
+			progressbar.OptionEnableColorCodes(true),
+			progressbar.OptionShowBytes(true),
+			progressbar.OptionSetWidth(15),
+			progressbar.OptionSetDescription("[cyan]updating database...[reset]"),
+			progressbar.OptionSetTheme(progressbar.Theme{
+				Saucer:        "[blue]o[reset]",
+				SaucerHead:    "[cyan]0[reset]",
+				SaucerPadding: " ",
+				BarStart:      "[",
+				BarEnd:        "]",
+			}))
+
 		for _, game := range steamGames {
+			bar.Add(1)
 			_, err := s.dbQueries.InsertGame(
 				context.Background(),
 				database.InsertGameParams{
@@ -76,7 +92,7 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 				log.Fatal("error populating database", err)
 			}
 			// add results print out here.
-			fmt.Printf("adding game: %v | appid: %v\n", game.Name, game.Appid)
+			//fmt.Printf("adding game: %v | appid: %v\n", game.Name, game.Appid)
 		}
 	}
 
