@@ -8,18 +8,18 @@
 2. Clone repository.
 3. Run `go mod tidy` from the cloned repository's directory.
 4. Build the executable and run by executing:
-    - Linux:  
+    #### Linux:  
     ```bash
         sudo go build -o /usr/bin steamfetch && steamfetch update
     ```
-    - Windows:
-    (recommended to created `$PATH` environmental variables if you want to run directly from terminal)
+    #### Windows:
     ```powershell
         go build -o <directory_path>/steamfetch && steamfetch udpate
     ```
-5. You will be prompted to enter your steamid and your [Steam Web API Key](https://steamcommunity.com/dev/apikey).
+    ***(you can also create `$PATH` environmental variables if you want to run directly from terminal)***
+6. You will be prompted to enter your steamid and your [Steam Web API Key](https://steamcommunity.com/dev/apikey).
    - you can find your steamid under: `Settings -> Account Details` in steam.
-6. An initial update should run to pull down your steam game data and you are ready to go!
+7. An initial update should run to pull down your steam game data and you are ready to go!
 
 ## Features:
 - [x] Display total steam games. 
