@@ -47,11 +47,11 @@ func handleSteamFetch(s *state, cmd command) error {
 	arrow := setANSIText("->|", Blue)
 
 	totalGameTimeForeverMins := int(totalGameTimeForever.Float64)
-	totalGameTimeAllMins := steamGameTime(totalGameTimeForeverMins, arrow, minutesToMinutes)
-	totalGameTimeAllHours := steamGameTime(totalGameTimeForeverMins, arrow, minutesToHours)
-	totalGameTimeAllDays := steamGameTime(totalGameTimeForeverMins, arrow, minutesToDays)
-	totalGameTimeAllMonths := steamGameTime(totalGameTimeForeverMins, arrow, minutesToMonths)
-	totalGameTimeAllYears := steamGameTime(totalGameTimeForeverMins, arrow, minutesToYears)
+	totalGameTimeAllMins := printSteamGameTime(totalGameTimeForeverMins, arrow, minutesToMinutes)
+	totalGameTimeAllHours := printSteamGameTime(totalGameTimeForeverMins, arrow, minutesToHours)
+	totalGameTimeAllDays := printSteamGameTime(totalGameTimeForeverMins, arrow, minutesToDays)
+	totalGameTimeAllMonths := printSteamGameTime(totalGameTimeForeverMins, arrow, minutesToMonths)
+	totalGameTimeAllYears := printSteamGameTime(totalGameTimeForeverMins, arrow, minutesToYears)
 	// Print out
 
 	logo := `
@@ -95,7 +95,7 @@ func handleSteamFetch(s *state, cmd command) error {
 	return nil
 }
 
-func steamGameTime(mins int, bullet string, f func(m int) (float64, string)) string {
+func printSteamGameTime(mins int, bullet string, f func(m int) (float64, string)) string {
 	time, measurement := f(mins)
 	if bullet == "" {
 		return fmt.Sprintf("%.2f %v", time, measurement)
