@@ -43,13 +43,17 @@ func handleSteamFetch(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	totalGameTimeForeverMins := int(totalGameTimeForever.Float64)
-	totalGameTimeAllHours := totalGameTimeForeverMins / 60
-	totalGameTimeAllDays := totalGameTimeAllHours / 24
-	totalGameTimeAllMonths := totalGameTimeAllDays / 30
-	totalGameTimeAllYears := fmt.Sprintf("%.1f year/s", float64(totalGameTimeAllMonths)/12)
-	// Print out
+	// bullet
 	arrow := setANSIText("->|", Blue)
+
+	totalGameTimeForeverMins := int(totalGameTimeForever.Float64)
+	totalGameTimeAllMins := steamGameTime(totalGameTimeForeverMins, arrow, minutesToMinutes)
+	totalGameTimeAllHours := steamGameTime(totalGameTimeForeverMins, arrow, minutesToHours)
+	totalGameTimeAllDays := steamGameTime(totalGameTimeForeverMins, arrow, minutesToDays)
+	totalGameTimeAllMonths := steamGameTime(totalGameTimeForeverMins, arrow, minutesToMonths)
+	totalGameTimeAllYears := steamGameTime(totalGameTimeForeverMins, arrow, minutesToYears)
+	// Print out
+
 	logo := `
 	⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿
 	⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠋⠉⠉⠉⠉⠻⣿⣿⣿⣿
@@ -67,21 +71,14 @@ func handleSteamFetch(s *state, cmd command) error {
 	fmt.Printf("%v %v\n", setANSIText("Your steam id:", Yellow), s.steamID)
 	fmt.Printf("%v %v\n", setANSIText("🎮 Total number of games:", Yellow), gameCount)
 	fmt.Printf("%v %v\n", setANSIText("😵‍💫 Total games backlog(not played):", Yellow), len(totalGamesNotPlayed))
-	fmt.Printf("%v\n%s%v minutes\n%s%v hours\n%s%v days\n%s%v month/s\n%s%v...\n",
-		setANSIText("⌛ Total steam gameplay time:", Yellow),
-		arrow,
-		totalGameTimeForeverMins,
-		arrow,
-		totalGameTimeAllHours,
-		arrow,
-		totalGameTimeAllDays,
-		arrow,
-		totalGameTimeAllMonths,
-		arrow,
-		totalGameTimeAllYears,
-	)
 
-	fmt.Printf("%v %v minutes\n", setANSIText("Total steam gameplay time (2 week):", Yellow), int(totalGameTime2Weeks.Float64))
+	fmt.Printf("%v\n", totalGameTimeAllMins)
+	fmt.Printf("%v\n", totalGameTimeAllHours)
+	fmt.Printf("%v\n", totalGameTimeAllDays)
+	fmt.Printf("%v\n", totalGameTimeAllMonths)
+	fmt.Printf("%v\n", totalGameTimeAllYears)
+
+	fmt.Printf("%v %v mins\n", setANSIText("Total steam gameplay time (2 week):", Yellow), int(totalGameTime2Weeks.Float64))
 	fmt.Println(setANSIText("Most played games:", Yellow))
 	fmt.Println(setANSIText("----------------------------------", Blue))
 
@@ -90,10 +87,19 @@ func handleSteamFetch(s *state, cmd command) error {
 		log.Fatal(err)
 	}
 	for _, game := range mostPlayedGames {
-		hrs, min := minutesToHours(game.PlaytimeForever)
-		fmt.Printf("%s%v: %vhrs, %vmins\n", arrow, game.Name, hrs, min)
+		hrs, time := minutesToHours(game.PlaytimeForever)
+		fmt.Printf("%v: %.2f %s\n", game.Name, hrs, time)
 	}
 	fmt.Println(setANSIText("----------------------------------", Blue))
 	fmt.Printf("%v: %v", setANSIText("Last updated", Cyan), lastDBUpdate.String)
 	return nil
+}
+
+func steamGameTime(mins int, bullet string, f func(m int) (float64, string)) string {
+	time, measurement := f(mins)
+	if bullet == "" {
+		return fmt.Sprintf("%.2f %v", time, measurement)
+	}
+	return fmt.Sprintf("%v%.2f %v", bullet, time, measurement)
+
 }

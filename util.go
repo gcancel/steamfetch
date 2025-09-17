@@ -122,11 +122,25 @@ func setANSIText(s, code string) string {
 	return code + s + Reset
 }
 
-func minutesToHours(min int) (hr, r int) {
-	hrs := min / 60
-	if min%60 != 0 {
-		remainingMins := min % 60
-		return hrs, remainingMins
-	}
-	return hrs, 0
+func minutesToMinutes(mins int) (float64, string) {
+	return float64(mins), "mins"
+}
+
+func minutesToHours(mins int) (float64, string) {
+	return float64(mins) / 60, "hrs"
+}
+
+func minutesToDays(mins int) (float64, string) {
+	hrs, _ := minutesToHours(mins)
+	return float64(hrs) / 24, "days"
+}
+
+func minutesToMonths(mins int) (float64, string) {
+	days, _ := minutesToDays(mins)
+	return float64(days) / 30, "months"
+}
+
+func minutesToYears(mins int) (float64, string) {
+	months, _ := minutesToMonths(mins)
+	return float64(months) / 12, "years"
 }
