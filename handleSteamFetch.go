@@ -128,15 +128,22 @@ func integrityCheck(s *state, gameTime sql.NullFloat64) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	allGames := result.Response.Games
 	var currentTotal int
 	for _, game := range allGames {
 		currentTotal += int(game.PlaytimeForever)
 	}
+
 	fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
 	if currentTotal != int(gameTime.Float64) {
 		fmt.Printf("Steam game time has been recently accrued. performing update... %v mins\n", currentTotal)
-		handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
+
+		err := handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		fmt.Println("update completed. please run steamfetch again.")
 		os.Exit(0)
 	}
