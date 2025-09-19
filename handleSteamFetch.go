@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -22,6 +24,7 @@ func handleSteamFetch(s *state, cmd command) error {
 		}
 
 	}
+
 	lastDBUpdate, err := s.dbQueries.GetLastDBUpdate(context.Background())
 	if err != nil {
 		log.Fatal("error retrieving last DB timestamp", err)
@@ -43,6 +46,13 @@ func handleSteamFetch(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// check if updating the current database is needed
+	err = integrityCheck(s, totalGameTimeForever)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// bullet
 	arrow := setANSIText("->|", Blue)
 
@@ -69,8 +79,10 @@ func handleSteamFetch(s *state, cmd command) error {
 `
 	fmt.Println(setANSIText(logo, Blue))
 	fmt.Printf("%v %v\n", setANSIText("Your steam id:", Yellow), s.steamID)
-	fmt.Printf("%v %v\n", setANSIText("🎮 Total number of games:", Yellow), gameCount)
-	fmt.Printf("%v %v\n", setANSIText("😵‍💫 Total games backlog(not played):", Yellow), len(totalGamesNotPlayed))
+	fmt.Printf("%v", printBacklogRatio(int(gameCount), len(totalGamesNotPlayed)))
+
+	//fmt.Printf("%v %v\n", setANSIText("🎮 Total number of games:", Yellow), gameCount)
+	//fmt.Printf("%v %v\n", setANSIText("😵‍💫 Total games backlog(not played):", Yellow), len(totalGamesNotPlayed))
 
 	fmt.Printf("%v\n", totalGameTimeAllMins)
 	fmt.Printf("%v\n", totalGameTimeAllHours)
@@ -79,7 +91,7 @@ func handleSteamFetch(s *state, cmd command) error {
 	fmt.Printf("%v\n", totalGameTimeAllYears)
 
 	fmt.Printf("%v %v mins\n", setANSIText("Total steam gameplay time (2 week):", Yellow), int(totalGameTime2Weeks.Float64))
-	fmt.Println(setANSIText("Most played games:", Yellow))
+	fmt.Println(setANSIText("Most played games: ", Yellow))
 	fmt.Println(setANSIText("----------------------------------", Blue))
 
 	mostPlayedGames, err := s.dbQueries.GetTopPlayedGames(context.Background(), int64(mostPlayedLimit))
@@ -102,4 +114,31 @@ func printSteamGameTime(mins int, bullet string, f func(m int) (float64, string)
 	}
 	return fmt.Sprintf("%v%.2f %v", bullet, time, measurement)
 
+}
+
+func printBacklogRatio(total, notPlayed int) string {
+	percentage := float64(notPlayed) / float64(total) * 100
+	labelText := setANSIText("🎮 Games Played/Not Played: ", Yellow)
+	output := fmt.Sprintf("%v%v / %v (%.2f%%)\n", labelText, notPlayed, total, percentage)
+	return output
+}
+
+func integrityCheck(s *state, gameTime sql.NullFloat64) error {
+	result, err := getOwnedGames(s.getOwnedGamesAPIURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	allGames := result.Response.Games
+	var currentTotal int
+	for _, game := range allGames {
+		currentTotal += int(game.PlaytimeForever)
+	}
+	fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
+	if currentTotal != int(gameTime.Float64) {
+		fmt.Printf("Steam game time has been recently accrued. performing update... %v mins\n", currentTotal)
+		handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
+		fmt.Println("update completed. please run steamfetch again.")
+		os.Exit(0)
+	}
+	return nil
 }

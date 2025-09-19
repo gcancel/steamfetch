@@ -2,12 +2,8 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
-	"net/http"
-	"time"
 
 	"github.com/gcancel/steamfetch/internal/database"
 	"github.com/schollz/progressbar/v3"
@@ -25,31 +21,12 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 		}
 	}
 
-	steamClient := &http.Client{Timeout: 30 * time.Second}
-	url := fmt.Sprintf("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=%v&steamid=%v&include_appinfo=1", s.steamAPIKey, s.steamID)
-
-	req, err := http.NewRequestWithContext(context.Background(), "GET", url, nil)
+	// calling "GetOwnedGames" api
+	result, err := getOwnedGames(s.getOwnedGamesAPIURL)
 	if err != nil {
-		return fmt.Errorf("error during request")
-	}
-	res, err := steamClient.Do(req)
-	if err != nil {
-		return fmt.Errorf("error retrieving response from: %v", url)
-	}
-	defer res.Body.Close()
-
-	data, err := io.ReadAll(res.Body)
-	if err != nil {
-		return fmt.Errorf("error parsing response body")
+		log.Fatal(err)
 	}
 
-	var result GetOwnedGames
-	err = json.Unmarshal(data, &result)
-	if err != nil {
-		return fmt.Errorf("error unmarshalling data: %v", err)
-	}
-
-	// take this data and put it in the db for use instead of constantly calling api
 	gameCount, err := s.dbQueries.GetCountGames(context.Background())
 	if err != nil {
 		log.Fatal("error counting games in database", err)

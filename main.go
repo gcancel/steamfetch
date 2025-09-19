@@ -13,9 +13,10 @@ import (
 
 type state struct {
 	// db connection will go here
-	steamID     string
-	steamAPIKey string
-	dbQueries   database.Queries
+	steamID             string
+	steamAPIKey         string
+	dbQueries           database.Queries
+	getOwnedGamesAPIURL string
 }
 
 func main() {
@@ -26,16 +27,24 @@ func main() {
 		handleInitialStart()
 	}
 
+	// ENV Variables
+	steamID := os.Getenv("STEAM_ID")
+	steamAPIKey := os.Getenv("STEAM_WEBAPI_KEY")
+
 	db, err := initDatabase()
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 
+	// api urls
+	url := fmt.Sprintf("http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=%v&steamid=%v&include_appinfo=1", steamAPIKey, steamID)
+
 	applicationState := &state{
-		steamID:     os.Getenv("STEAM_ID"),
-		steamAPIKey: os.Getenv("STEAM_WEBAPI_KEY"),
-		dbQueries:   *database.New(db),
+		steamID:             steamID,
+		steamAPIKey:         steamAPIKey,
+		dbQueries:           *database.New(db),
+		getOwnedGamesAPIURL: url,
 	}
 
 	commands := commands{
