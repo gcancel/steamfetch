@@ -135,7 +135,7 @@ func integrityCheck(s *state, gameTime sql.NullFloat64) error {
 		currentTotal += int(game.PlaytimeForever)
 	}
 
-	fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
+	//fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
 	if currentTotal != int(gameTime.Float64) {
 		fmt.Printf("Steam game time has been recently accrued. performing update... %v mins\n", currentTotal)
 
