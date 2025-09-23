@@ -49,13 +49,15 @@ func main() {
 
 	commands := commands{
 		registeredCommands: make(map[string]func(*state, command) error),
+		descriptions:       make(map[string]string),
 	}
 
 	// registered commands:
-	commands.register("steamfetch", handleSteamFetch)
-	commands.register("-mostplayed", handleSteamFetch) // default command if no arguments are passed
-	commands.register("update", handleSteamFetchUpdate)
-	commands.register("backlog", handleSteamFetchBacklog)
+	commands.register("steamfetch", "Usage: steamfetch <?options>", handleSteamFetch) // default command if no arguments are passed
+	commands.register("update", "Updates the local database (force update with -f or --force)", handleSteamFetchUpdate)
+	commands.register("backlog", "Lists all unplayed games (-a or --all for all games)", handleSteamFetchBacklog)
+	commands.register("--mostplayed <num>", "Sets the amount of games displayed in most played section (max 50)", handleSteamFetch)
+	commands.register("--help", "Display the help message", commandsContext(commands, handleSteamFetchHelp))
 
 	var commandName string
 	var commandArgs []string
@@ -76,4 +78,12 @@ func main() {
 		log.Fatal(err)
 	}
 
+}
+
+func commandsContext(cmds commands, f func(s *state, cmd command, cmds commands) error) func(s *state, cmd command) error {
+
+	return func(s *state, cmd command) error {
+		f(s, cmd, cmds)
+		return nil
+	}
 }
