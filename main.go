@@ -79,11 +79,3 @@ func main() {
 	}
 
 }
-
-func commandsContext(cmds commands, f func(s *state, cmd command, cmds commands) error) func(s *state, cmd command) error {
-
-	return func(s *state, cmd command) error {
-		f(s, cmd, cmds)
-		return nil
-	}
-}

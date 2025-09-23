@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 )
 
 type command struct {
@@ -25,4 +26,13 @@ func (c *commands) run(s *state, cmd command) error {
 		return fmt.Errorf("command not found")
 	}
 	return f(s, cmd)
+}
+
+func commandsContext(cmds commands, f func(s *state, cmd command, cmds commands) error) func(s *state, cmd command) error {
+
+	return func(s *state, cmd command) error {
+		log.Fatal(f(s, cmd, cmds))
+
+		return nil
+	}
 }
