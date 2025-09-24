@@ -34,3 +34,12 @@ DELETE FROM steam_games;
 SELECT name, appid from steam_games
 WHERE playtime_forever = 0
 ORDER BY name;
+
+-- name: GetTotalGamesAll :many
+SELECT name, appid from steam_games
+ORDER BY name;
+
+-- name: GetTotalGamesPlayed :many
+SELECT name, appid from steam_games
+WHERE playtime_forever > 1
+ORDER BY name;

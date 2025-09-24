@@ -28,10 +28,13 @@ func (c *commands) run(s *state, cmd command) error {
 	return f(s, cmd)
 }
 
-func commandsContext(cmds commands, f func(s *state, cmd command, cmds commands) error) func(s *state, cmd command) error {
+func commandsContextWrapper(cmds commands, f func(s *state, cmd command, cmds commands) error) func(s *state, cmd command) error {
 
 	return func(s *state, cmd command) error {
-		log.Fatal(f(s, cmd, cmds))
+		err := f(s, cmd, cmds)
+		if err != nil {
+			log.Fatal(err)
+		}
 
 		return nil
 	}

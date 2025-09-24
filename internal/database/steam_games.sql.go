@@ -86,6 +86,39 @@ func (q *Queries) GetTotalGameTimeForever(ctx context.Context) (sql.NullFloat64,
 	return sum, err
 }
 
+const getTotalGamesAll = `-- name: GetTotalGamesAll :many
+SELECT name, appid from steam_games
+ORDER BY name
+`
+
+type GetTotalGamesAllRow struct {
+	Name  string
+	Appid int
+}
+
+func (q *Queries) GetTotalGamesAll(ctx context.Context) ([]GetTotalGamesAllRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTotalGamesAll)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTotalGamesAllRow
+	for rows.Next() {
+		var i GetTotalGamesAllRow
+		if err := rows.Scan(&i.Name, &i.Appid); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getTotalGamesNotPlayed = `-- name: GetTotalGamesNotPlayed :many
 SELECT name, appid from steam_games
 WHERE playtime_forever = 0
@@ -106,6 +139,40 @@ func (q *Queries) GetTotalGamesNotPlayed(ctx context.Context) ([]GetTotalGamesNo
 	var items []GetTotalGamesNotPlayedRow
 	for rows.Next() {
 		var i GetTotalGamesNotPlayedRow
+		if err := rows.Scan(&i.Name, &i.Appid); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getTotalGamesPlayed = `-- name: GetTotalGamesPlayed :many
+SELECT name, appid from steam_games
+WHERE playtime_forever > 1
+ORDER BY name
+`
+
+type GetTotalGamesPlayedRow struct {
+	Name  string
+	Appid int
+}
+
+func (q *Queries) GetTotalGamesPlayed(ctx context.Context) ([]GetTotalGamesPlayedRow, error) {
+	rows, err := q.db.QueryContext(ctx, getTotalGamesPlayed)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetTotalGamesPlayedRow
+	for rows.Next() {
+		var i GetTotalGamesPlayedRow
 		if err := rows.Scan(&i.Name, &i.Appid); err != nil {
 			return nil, err
 		}

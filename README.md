@@ -33,6 +33,7 @@
 
 ## How to use:
 - Run `./steamfetch` locally from the repository directory or `steamfetch` from the terminal if you setup your `$PATH` environmental variables, or on Linux, moved the executable to /usr/bin.
-- The `update` parameter pulls down your steam data and updates the local database. You can use the `-f` or `--force` flag to clear the database table and pull the data again.
+- `--help` displays the help message.
+- `update` parameter pulls down your steam data and updates the local database. You can use the `-f` or `--force` flag to clear the database table and pull the data again.
 - `--mostplayed n` flag can be used to set the number of returned games for the "Most played games" section
 - `backlog` parameter will return a comma delimited list of all games you have not played (0 minutes). In the case you want to pipe this to a text file.

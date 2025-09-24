@@ -57,7 +57,7 @@ func main() {
 	commands.register("update", "Updates the local database (force update with -f or --force)", handleSteamFetchUpdate)
 	commands.register("backlog", "Lists all unplayed games (-a or --all for all games)", handleSteamFetchBacklog)
 	commands.register("--mostplayed <num>", "Sets the amount of games displayed in most played section (max 50)", handleSteamFetch)
-	commands.register("--help", "Display the help message", commandsContext(commands, handleSteamFetchHelp))
+	commands.register("--help", "Display the help message", commandsContextWrapper(commands, handleSteamFetchHelp))
 
 	var commandName string
 	var commandArgs []string
