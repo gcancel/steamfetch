@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"log"
+
+	"github.com/gcancel/steamfetch/internal/database"
 )
 
 func handleSteamFetchBacklog(s *state, cmd command) error {
@@ -16,10 +18,7 @@ func handleSteamFetchBacklog(s *state, cmd command) error {
 			if err != nil {
 				log.Fatal(err)
 			}
-			for _, game := range games {
-				fmt.Printf("%v, %v\n", game.Name, game.Appid)
-			}
-			fmt.Printf("Total: %v", len(games))
+			printGameResults(games)
 			return nil
 		}
 		if flag == "--played" || flag == "-p" {
@@ -27,10 +26,7 @@ func handleSteamFetchBacklog(s *state, cmd command) error {
 			if err != nil {
 				log.Fatal(err)
 			}
-			for _, game := range playedGames {
-				fmt.Printf("%v, %v\n", game.Name, game.Appid)
-			}
-			fmt.Printf("Total: %v", len(playedGames))
+			printGameResults(playedGames)
 			return nil
 		}
 
@@ -39,9 +35,27 @@ func handleSteamFetchBacklog(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, game := range backlog {
-		fmt.Printf("%v, %v\n", game.Name, game.Appid)
-	}
-	fmt.Printf("Total: %v", len(backlog))
+	printGameResults(backlog)
 	return nil
+}
+
+func printGameResults(games interface{}) {
+	switch s := games.(type) {
+	case []database.GetTotalGamesNotPlayedRow:
+		for _, game := range s {
+			fmt.Printf("%v, %v\n", game.Name, game.Appid)
+		}
+		fmt.Printf("Total: %v", len(s))
+	case []database.GetTotalGamesAllRow:
+		for _, game := range s {
+			fmt.Printf("%v, %v\n", game.Name, game.Appid)
+		}
+		fmt.Printf("Total: %v", len(s))
+	case []database.GetTotalGamesPlayedRow:
+		for _, game := range s {
+			fmt.Printf("%v, %v\n", game.Name, game.Appid)
+		}
+		fmt.Printf("Total: %v", len(s))
+	}
+
 }

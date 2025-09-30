@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 )
 
@@ -137,15 +136,16 @@ func integrityCheck(s *state, gameTime sql.NullFloat64) error {
 
 	//fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
 	if currentTotal != int(gameTime.Float64) {
-		fmt.Printf("Steam game time has been recently accrued. performing update... %v mins\n", currentTotal)
+		fmt.Printf("Steam game time has been recently accrued. Consider performing update for accuracy... %v mins\n", currentTotal)
 
-		err := handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
-		if err != nil {
-			log.Fatal(err)
-		}
+		// turn into option
+		// err := handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
+		// if err != nil {
+		//	log.Fatal(err)
+		// }
 
-		fmt.Println("update completed. please run steamfetch again.")
-		os.Exit(0)
+		// fmt.Println("update completed. please run steamfetch again.")
+		// os.Exit(0)
 	}
 	return nil
 }
