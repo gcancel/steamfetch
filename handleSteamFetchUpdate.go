@@ -31,6 +31,18 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	if err != nil {
 		log.Fatal("error counting games in database", err)
 	}
+	totalGameTimeForever, err := s.dbQueries.GetTotalGameTimeForever(context.Background())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	needUpdate, err := updateCheck(s, totalGameTimeForever)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if !needUpdate {
+		fmt.Printf("Local database is up to date.")
+	}
 	if gameCount <= 1 || forceUpdate {
 		steamGames := result.Response.Games
 

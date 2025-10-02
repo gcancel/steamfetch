@@ -100,6 +100,27 @@ func initDatabase() (*sql.DB, error) {
 	return db, nil
 }
 
+func updateCheck(s *state, gameTime sql.NullFloat64) (bool, error) {
+	// returns true if game time from steam and in the local database aren't in sync, false otherwise
+	result, err := getOwnedGames(s.getOwnedGamesAPIURL)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	allGames := result.Response.Games
+	var currentTotal int
+	for _, game := range allGames {
+		currentTotal += int(game.PlaytimeForever)
+	}
+
+	//fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
+	if currentTotal != int(gameTime.Float64) {
+		fmt.Printf("Steam game time has been recently accrued. Consider performing update for accuracy... %v mins\n", currentTotal)
+		return true, nil
+	}
+	return false, nil
+}
+
 /* func fileExists(filename string) bool {
 	_, err := os.Stat(filename)
 	return !errors.Is(err, os.ErrNotExist)

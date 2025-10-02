@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 	"strconv"
@@ -47,7 +46,7 @@ func handleSteamFetch(s *state, cmd command) error {
 	}
 
 	// check if updating the current database is needed
-	err = integrityCheck(s, totalGameTimeForever)
+	_, err = updateCheck(s, totalGameTimeForever)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -120,32 +119,4 @@ func printBacklogRatio(total, notPlayed int) string {
 	labelText := setANSIText("🎮 Games Played/Not Played: ", Yellow)
 	output := fmt.Sprintf("%v%v / %v (%.2f%%)\n", labelText, notPlayed, total, percentage)
 	return output
-}
-
-func integrityCheck(s *state, gameTime sql.NullFloat64) error {
-	result, err := getOwnedGames(s.getOwnedGamesAPIURL)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	allGames := result.Response.Games
-	var currentTotal int
-	for _, game := range allGames {
-		currentTotal += int(game.PlaytimeForever)
-	}
-
-	//fmt.Printf("current: %v in database: %v\n", currentTotal, int(gameTime.Float64))
-	if currentTotal != int(gameTime.Float64) {
-		fmt.Printf("Steam game time has been recently accrued. Consider performing update for accuracy... %v mins\n", currentTotal)
-
-		// turn into option
-		// err := handleSteamFetchUpdate(s, command{name: "update", arguments: []string{"-f"}})
-		// if err != nil {
-		//	log.Fatal(err)
-		// }
-
-		// fmt.Println("update completed. please run steamfetch again.")
-		// os.Exit(0)
-	}
-	return nil
 }
