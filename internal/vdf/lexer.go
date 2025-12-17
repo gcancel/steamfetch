@@ -1,7 +1,12 @@
 package vdf
 
-import "bufio"
+/*
+import (
+	"bufio"
+	"log"
+)
 
 type Lexer struct {
 	r *bufio.Reader
 }
+*/
