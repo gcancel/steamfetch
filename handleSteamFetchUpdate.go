@@ -42,7 +42,14 @@ func handleSteamFetchUpdate(s *state, cmd command) error {
 	}
 	if !needUpdate {
 		fmt.Printf("Local database is up to date.")
+	} else {
+		forceUpdate = true
+		err := s.dbQueries.ClearSteamDB(context.Background())
+		if err != nil {
+			log.Fatal("error clearing database", err)
+		}
 	}
+
 	if gameCount <= 1 || forceUpdate {
 		steamGames := result.Response.Games
 

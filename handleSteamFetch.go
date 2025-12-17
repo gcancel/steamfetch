@@ -11,7 +11,7 @@ func handleSteamFetch(s *state, cmd command) error {
 	// will fetch data from the db to aggregate data and display in terminal
 	mostPlayedLimit := 5
 	if len(cmd.arguments) >= 1 {
-		limit, err := strconv.Atoi(cmd.arguments[0])
+		limit, err := strconv.Atoi(cmd.arguments[1]) // capturing the limit to use
 		if err != nil {
 			log.Fatal("error parsing mostplayed limit", err)
 		}
